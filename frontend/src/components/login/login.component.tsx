@@ -42,9 +42,11 @@ const LoginComponent = () => {
     <>
       <div className="flex min-h-screen flex-col md:flex-row">
         <div className="bg-zinc-800 flex min-h-56 flex-col justify-between p-6 md:w-[35%] md:min-h-screen md:p-8">
-          <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-blue-400">
-            StorySparkAI
-          </h1>
+          <a href="/">
+            <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-blue-400">
+               StorySparkAI
+            </h1>
+          </a>
           <h1 className="text-3xl text-gray-100">Welcome Back</h1>
         </div>
         <div className="bg-black flex flex-1 items-center justify-center p-6 md:w-[65%] md:p-8">
