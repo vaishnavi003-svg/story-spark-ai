@@ -29,11 +29,13 @@ import EmailValidationComponent from "./components/email_validation/email.valida
 import { USER_ROLE } from "./constants/role";
 import PostListsComponent from "./components/dashboard/posts/post_lists.component";
 import ProfileComponent from "./components/dashboard/profile/profile.component";
+import HelpCenterComponent from "./components/help_center/help_center.component";
+
 import AboutUsComponent from "./components/footer/about-us.tsx";
 import CareerComponent from "./components/footer/career.tsx";
 import ContactUsComponent from "./components/footer/contact-us.tsx";
 import BlogComponent from "./components/footer/blog.tsx";
-import HelpCenterComponent from "./components/footer/help-center.tsx";
+// import HelpCenterComponent from "./components/footer/help-center.tsx";
 import GuidelinesComponent from "./components/footer/guidelines.tsx";
 import TemplatesComponent from "./components/templates/templates.component";
 import CommunityComponent from "./components/community/community.component";
@@ -55,10 +57,8 @@ const ProtectedRoute = ({
 };
 
 function App() {
-
-
   const [darkMode, setDarkMode] = useState(
-    localStorage.getItem("theme") === "dark"
+    localStorage.getItem("theme") === "dark",
   );
 
   useEffect(() => {
@@ -73,7 +73,6 @@ function App() {
 
   return (
     <Router>
-
       {/* Dark Mode Toggle Button */}
       {/* <div className="fixed top-4 right-4 z-50">
         <button
@@ -92,7 +91,6 @@ function App() {
               <HeroSectionComponent />
               <HomeComponent />
             </RootLayout>
-
           }
         />
         <Route
@@ -102,7 +100,8 @@ function App() {
               <TemplatesComponent />
             </RootLayout>
           }
-        /><Route
+        />
+        <Route
           path="/writing-assistant"
           element={
             <RootLayout>
@@ -110,8 +109,24 @@ function App() {
             </RootLayout>
           }
         />
-        <Route path="/dashboard" element={<ProtectedRoute element={<DashboardLayout />} allowedRoles={[USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE.SUPER_ADMIN, USER_ROLE.WRITER]} />}>
-          <Route index element={<ProtectedRoute element={<DashboardComponent />} allowedRoles={[USER_ROLE.ADMIN, USER_ROLE.SUPER_ADMIN]} />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute
+              element={<DashboardLayout />}
+              allowedRoles={[USER_ROLE.ADMIN, USER_ROLE.SUPER_ADMIN]}
+            />
+          }
+        >
+          <Route
+            index
+            element={
+              <ProtectedRoute
+                element={<DashboardComponent />}
+                allowedRoles={[USER_ROLE.ADMIN, USER_ROLE.SUPER_ADMIN]}
+              />
+            }
+          />
 
           <Route
             path="post-lists"
@@ -201,17 +216,60 @@ function App() {
           />
         </Route>
 
-        <Route path="/stories" element={<StoriesComponent />} />
-        <Route path="/login" element={<LoginComponent />} />
+        <Route
+          path="/stories"
+          element={
+            <RootLayout>
+              <StoriesComponent />
+            </RootLayout>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <RootLayout>
+              <LoginComponent />
+            </RootLayout>
+          }
+        />
 
         <Route
           path="/auth/email-validation"
           element={<EmailValidationComponent />}
         />
 
-        <Route path="/signup" element={<SignUpComponent />} />
-        <Route path="/pricing" element={<PricingComponent />} />
-        <Route path="/explore" element={<ExploreComponent />} />
+        <Route
+          path="/signup"
+          element={
+            <RootLayout>
+              <SignUpComponent />
+            </RootLayout>
+          }
+        />
+        <Route
+          path="/pricing"
+          element={
+            <RootLayout>
+              <PricingComponent />
+            </RootLayout>
+          }
+        />
+        <Route
+          path="/explore"
+          element={
+            <RootLayout>
+              <ExploreComponent />
+            </RootLayout>
+          }
+        />
+        <Route
+          path="/help"
+          element={
+            <RootLayout>
+              <HelpCenterComponent />
+            </RootLayout>
+          }
+        />
         <Route
           path="/bookmarks"
           element={
@@ -239,17 +297,79 @@ function App() {
           }
         />
 
-        <Route path="/post/:id" element={<PostDetailsComponent />} />
-        <Route path="/about-us" element={<AboutUsComponent />} />
-        <Route path="/career" element={<CareerComponent />} />
-        <Route path="/contact-us" element={<ContactUsComponent />} />
-        <Route path="/blog" element={<BlogComponent />} />
-        <Route path="/help-center" element={<HelpCenterComponent />} />
-        <Route path="/guidelines" element={<GuidelinesComponent />} />
-        <Route path="/community" element={<CommunityComponent />} />
-        <Route path="*" element={<NotFoundComponent />} />
+        <Route
+          path="/post/:id"
+          element={
+            <RootLayout>
+              <PostDetailsComponent />
+            </RootLayout>
+          }
+        />
+        <Route
+          path="/about-us"
+          element={
+            <RootLayout>
+              <AboutUsComponent />
+            </RootLayout>
+          }
+        />
+        <Route
+          path="/career"
+          element={
+            <RootLayout>
+              <CareerComponent />
+            </RootLayout>
+          }
+        />
+        <Route
+          path="/contact-us"
+          element={
+            <RootLayout>
+              <ContactUsComponent />
+            </RootLayout>
+          }
+        />
+        <Route
+          path="/blog"
+          element={
+            <RootLayout>
+              <BlogComponent />
+            </RootLayout>
+          }
+        />
+        <Route
+          path="/help-center"
+          element={
+            <RootLayout>
+              <HelpCenterComponent />
+            </RootLayout>
+          }
+        />
+        <Route
+          path="/guidelines"
+          element={
+            <RootLayout>
+              <GuidelinesComponent />
+            </RootLayout>
+          }
+        />
+        <Route
+          path="/community"
+          element={
+            <RootLayout>
+              <CommunityComponent />
+            </RootLayout>
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <RootLayout>
+              <NotFoundComponent />
+            </RootLayout>
+          }
+        />
       </Routes>
-
     </Router>
   );
 }
