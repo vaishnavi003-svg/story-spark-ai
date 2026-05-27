@@ -7,9 +7,10 @@ import {
   useGoogleLoginMutation,
 } from "../../redux/apis/auth.api";
 import { storeUserInfo, getUserInfo } from "../../services/auth.service";
+import { USER_ROLE } from "../../constants/role";
 import RedirectComponent from "../redirect.component";
 import toast, { Toaster } from "react-hot-toast";
-import { GoogleLogin } from "@react-oauth/google";
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 
 type Inputs = {
   email: string;
@@ -40,9 +41,7 @@ const LoginComponent = () => {
 
         setIsLoggedIn(true);
       }
-    } catch (err: unknown) {
-      console.log("error: ", err);
-
+    } catch {
       toast.error(
         "Login failed. Please check your credentials."
       );
@@ -52,7 +51,7 @@ const LoginComponent = () => {
   };
 
   const handleGoogleLoginSuccess = async (
-    credentialResponse: any
+    credentialResponse: CredentialResponse
   ) => {
     setIsBusy(true);
 
@@ -72,9 +71,7 @@ const LoginComponent = () => {
 
         setIsLoggedIn(true);
       }
-    } catch (err: unknown) {
-      console.log("Google login error: ", err);
-
+    } catch {
       toast.error(
         "Failed to login with Google. Please try again."
       );
@@ -84,8 +81,6 @@ const LoginComponent = () => {
   };
 
   const handleGoogleLoginError = () => {
-    console.log("Login Failed");
-
     toast.error(
       "Google login failed. Please try again."
     );
@@ -96,8 +91,8 @@ const LoginComponent = () => {
     const userInfo = getUserInfo();
 
     const isDashboardUser =
-      userInfo?.role === "admin" ||
-      userInfo?.role === "super_admin";
+      userInfo?.role === USER_ROLE.ADMIN ||
+      userInfo?.role === USER_ROLE.SUPER_ADMIN;
 
     return (
       <RedirectComponent
@@ -128,6 +123,13 @@ const LoginComponent = () => {
 
         <div className="bg-slate-800/60 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-8 sm:p-10 shadow-2xl">
 
+            <button
+            onClick={() => window.location.href = "/"}
+            className="mb-4 text-sm text-blue-400 hover:text-blue-300 transition-colors duration-200 flex items-center gap-2"
+                      >
+            ← Back to Home
+            </button>
+
           <h3 className="mb-6 text-center text-2xl font-bold tracking-tight text-slate-200">
             Welcome Back
           </h3>
@@ -157,6 +159,15 @@ const LoginComponent = () => {
               register={register}
             />
 
+            <div className="flex justify-end -mt-2">
+              <a
+                href="/forgot-password"
+                className="text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors duration-200"
+              >
+                Forgot Password?
+              </a>
+            </div>
+
             <SSButton
               text="Sign In"
               type="submit"
@@ -179,7 +190,8 @@ const LoginComponent = () => {
 
           </div>
 
-          <div className="mt-6 flex justify-center">
+          {/* Explicitly added list-none to prevent stray bullet point artifact on production build */}
+          <div className="mt-6 flex justify-center list-none">
             <GoogleLogin
               onSuccess={handleGoogleLoginSuccess}
               onError={handleGoogleLoginError}
