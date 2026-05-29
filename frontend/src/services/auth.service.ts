@@ -20,7 +20,7 @@ type AuthUserInfo = {
 
 const buildUserInfo = (decodedData: AuthUserInfo): AuthUserInfo => ({
   email: decodedData.email || "",
-  userId: decodedData.userId || "",
+  userId: decodedData.userId || decodedData._id || "",
   name: decodedData.name || "",
   postsCount: decodedData.postsCount || 0,
   role: decodedData.role || "guest",
