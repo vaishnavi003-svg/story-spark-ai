@@ -33,9 +33,11 @@ const SSInput = <T extends FieldValues>({
 }: SSInputProps<T>) => {
   const [showPassword, setShowPassword] = useState(false);
 
+
   const inputType =
 
     type === "password" ? (showPassword ? "text" : "password") : type;
+
 
 
   return (
@@ -48,13 +50,14 @@ const SSInput = <T extends FieldValues>({
       </label>
       <div className="relative mt-2 w-full box-border">
         {icon && (
-          <span className="absolute inset-y-0 left-0 pl-2 flex items-center text-gray-500">
+          <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
             <i className={icon}></i>
           </span>
         )}
         <input
           type={inputType}
           id={name}
+
 
           className={`w-full box-border pl-8 pr-10 py-1.5 text-base text-gray-900 dark:text-gray-200 bg-white dark:bg-slate-800 border rounded-md sm:text-sm transition-colors ${
             error
@@ -63,10 +66,12 @@ const SSInput = <T extends FieldValues>({
 
           }`}
           placeholder={placeholder}
+
           autoComplete={autoComplete}
           {...register(name, validation)}
         />
         {type === "password" && (
+
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
@@ -85,6 +90,7 @@ const SSInput = <T extends FieldValues>({
         <p className="text-red-400 text-sm mt-1">{error.message}</p>
 
       )}
+
     </div>
   );
 };
