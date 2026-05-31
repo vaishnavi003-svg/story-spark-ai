@@ -66,6 +66,7 @@ const getPosts = async (
     filters;
   const andCondition: Record<string, unknown>[] = [
     { isDeleted: { $ne: true } },
+    { isPublished: true },
   ];
 
  if (searchTerm) {
@@ -213,7 +214,7 @@ const getPublishedPostsByAuthor = async (
 
 const getLatestPosts = async () => {
   try {
-    const res = await Post.find({ isDeleted: { $ne: true } })
+    const res = await Post.find({ isDeleted: { $ne: true }, isPublished: true })
       .sort({ createdAt: -1 })
       .limit(3)
       .populate("author", "name email createdAt")
@@ -238,6 +239,7 @@ const getFeaturedPosts = async () => {
     const res = await Post.find({
       isFeaturedPost: true,
       isDeleted: { $ne: true },
+      isPublished: true,
     })
       .sort({ createdAt: -1, updatedBy: -1 })
       .limit(3)
