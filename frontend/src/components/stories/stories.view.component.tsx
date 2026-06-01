@@ -43,13 +43,15 @@ interface IRelatedStoriesComponentProps {
 }
 
 const RelatedStoriesComponent: React.FC<IRelatedStoriesComponentProps> = ({
-  posts,currentPostId,
+  posts, currentPostId,
 }) => {
   const navigate = useNavigate();
-  const filteredPosts=posts.filter((post)=>post._id!==currentPostId)
+  const filteredPosts = posts.filter((post) => post._id !== currentPostId);
+
   return (
     <div className="mt-16 px-4 sm:px-6 lg:px-8 max-w-8xl mx-auto pb-10">
       <style>
+        
         {`
           @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
@@ -132,7 +134,16 @@ const RelatedStoriesComponent: React.FC<IRelatedStoriesComponentProps> = ({
                   onClick={handleExportMarkdown}
                   disabled={!selectedStory}
                 >
-                  ⬇️ Export Markdown
+            ⬇️ Export Markdown
+                </button>
+                <button type="button" className="rounded-lg px-4 py-2 bg-pink-600 text-slate-200 font-semibold cursor-pointer hover:bg-pink-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" onClick={() => handleShareStory("twitter")} disabled={!selectedStory}>
+                  🐦 Share
+                </button>
+                <button type="button" className="rounded-lg px-4 py-2 bg-violet-700 text-slate-200 font-semibold cursor-pointer hover:bg-violet-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" onClick={() => setShowWorldMap(true)} disabled={!selectedStory}>
+                  🗺️ World Map
+                </button>
+                <button type="button" className="rounded-lg px-4 py-2 bg-fuchsia-700 text-slate-200 font-semibold cursor-pointer hover:bg-fuchsia-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" onClick={() => setShowRemix(true)} disabled={!selectedStory}>
+                  🔀 Remix
                 </button>
                 <button
                   type="button"
