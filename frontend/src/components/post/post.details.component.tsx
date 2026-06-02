@@ -12,6 +12,7 @@ import {
 } from "../../redux/apis/storyVersion.api";
 import RelatedStoriesComponent from "./related.stories.view.component";
 import PostCommentComponent from "./post.comment.component";
+import { ComparisonMode } from "../story-comparison";
 
 import LoadingAnimation from "../loading/loading.component";
 import SSProfile from "../ui-component/ss-profile/ss-profile";
@@ -20,6 +21,7 @@ import BookmarkButton from "../BookmarkButton";
 import AudioPlayer from "../AudioPlayer";
 
 import { formatDateShort } from "../../utils/time-formate";
+import { formatReadingStats } from "../../utils/story-utils";
 import { getUserInfo } from "../../services/auth.service";
 
 import { useToggleReactionMutation } from "../../redux/apis/reaction.api";
@@ -95,6 +97,7 @@ const PostDetailsComponent = () => {
   const [editedTitle, setEditedTitle] = useState("");
   const [editedContent, setEditedContent] = useState("");
   const [showTimeline, setShowTimeline] = useState(false);
+  const [showComparison, setShowComparison] = useState(false);
 
   const [updatePost, { isLoading: isUpdating }] = useUpdatePostMutation();
   const { data: versions, isLoading: isLoadingVersions } = useGetVersionsByStoryIdQuery(id || "", {
@@ -309,6 +312,12 @@ const PostDetailsComponent = () => {
                 >
                   ✨ Story Timeline & History
                 </button>
+                <button
+                  onClick={() => setShowComparison(true)}
+                  className="flex items-center gap-1.5 px-4 py-2 text-sm bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:opacity-90 rounded-lg transition-all active:scale-95 cursor-pointer font-semibold shadow-md"
+                >
+                  📊 Compare Variations
+                </button>
               </div>
             )}
 
@@ -358,6 +367,9 @@ const PostDetailsComponent = () => {
                   <div className="flex gap-2 mb-6">
                     <span className="inline-flex items-center rounded-full bg-blue-950/60 text-blue-300 border border-blue-700/50 py-1 px-3 text-xs font-semibold">
                       🌐 {post.language}
+                    </span>
+                    <span className="inline-flex items-center rounded-full bg-slate-800/60 text-slate-400 border border-slate-700/50 py-1 px-3 text-xs font-semibold">
+                      📖 {formatReadingStats(post.content)}
                     </span>
                   </div>
                 )}
@@ -547,6 +559,31 @@ const PostDetailsComponent = () => {
                   Direct edits or alternate ending selections will create auto-snapshots here!
                 </p>
               </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Story Comparison Drawer */}
+      {showComparison && (
+        <div className="fixed inset-y-0 right-0 z-50 w-full max-w-3xl bg-white dark:bg-[#0f172a]/95 backdrop-blur-xl border-l border-slate-200 dark:border-slate-700/60 shadow-2xl overflow-y-auto animate-slide-in flex flex-col">
+          <div className="sticky top-0 bg-white dark:bg-[#0f172a] border-b border-slate-200 dark:border-slate-700 p-6 flex justify-between items-center">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">📊 Story Variation Comparison</h3>
+            <button
+              onClick={() => setShowComparison(false)}
+              className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-900 dark:text-white transition-all cursor-pointer"
+              aria-label="Close comparison"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-6">
+            {id && (
+              <ComparisonMode
+                versions={versions || []}
+                isLoadingVersions={isLoadingVersions}
+                onClose={() => setShowComparison(false)}
+              />
             )}
           </div>
         </div>
