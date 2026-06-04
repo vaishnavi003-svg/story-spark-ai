@@ -46,7 +46,7 @@ const toggleReaction = async (
       await post.save();
 
       return {
-        message: "Reaction removed",
+        message: "Reaction removed successfully",
         likesCount: post.likesCount,
       };
     } else {
@@ -55,7 +55,7 @@ const toggleReaction = async (
       await existingReaction.save();
 
       return {
-        message: "Reaction updated",
+        message: "Reaction updated successfully",
         likesCount: post.likesCount,
       };
     }
@@ -73,7 +73,7 @@ const toggleReaction = async (
     await post.save();
 
     return {
-      message: "Reaction added",
+      message: "Reaction added successfully",
       likesCount: post.likesCount,
     };
   }
