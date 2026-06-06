@@ -34,7 +34,8 @@ const SSInput = <T extends FieldValues>({
   autoComplete,
   autoFocus,
 }: SSInputProps<T>) => {
-  const [showPassword, setShowPassword] = useState(false);
+  const [showLocalPassword, setShowLocalPassword] = useState(false);
+
 
 
 
@@ -67,10 +68,13 @@ const SSInput = <T extends FieldValues>({
 
 
 
+
         {/* The SINGLE Corrected Input Field with Bulletproof Padding */}
+
         <input
           type={inputType}
           id={name}
+
 
 
           className={`w-full h-[52px] box-border text-base text-gray-900 dark:text-white bg-gray-100 dark:bg-[#131c2f] border rounded-2xl placeholder:text-gray-500 focus:outline-none transition-all ${error
@@ -88,14 +92,18 @@ const SSInput = <T extends FieldValues>({
           autoComplete={autoComplete}
           autoFocus={autoFocus}
           {...register(name, validation)}
+
           className={`w-full h-11 block box-border rounded-xl border bg-transparent text-sm transition-all duration-200 focus:outline-none focus:ring-2 ${
+
             icon ? "pl-10" : "px-4"
           } ${type === "password" ? "pr-10" : "pr-4"} ${
             error
               ? "border-rose-500 focus:ring-rose-500/20 focus:border-rose-500 text-rose-900 dark:text-rose-200"
               : "border-slate-200 dark:border-slate-700 text-gray-900 dark:text-gray-200 focus:border-blue-500 focus:ring-blue-500/20"
           }`}
+
         />
+
 
 
 
@@ -111,10 +119,12 @@ const SSInput = <T extends FieldValues>({
             aria-label={showPassword ? "Hide password" : "Show password"}
 
 
+
           >
-            <i className={showPassword ? "fi fi-rr-eye" : "fi fi-rr-eye-crossed"}></i>
+            <i className={showLocalPassword ? "fi fi-rr-eye" : "fi fi-rr-eye-crossed"}></i>
           </button>
         )}
+
 
       </div>
 
@@ -126,6 +136,7 @@ const SSInput = <T extends FieldValues>({
         <p className="text-red-500 text-sm mt-2">{error.message}</p>
 
       )}
+
 
 
 
