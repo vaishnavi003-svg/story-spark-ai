@@ -381,7 +381,6 @@ const SignUpComponent = () => {
               <SSButton text="Sign Up" type="submit" isLoading={isBusy} />
             </form>
           ) : (
-            // ✅ FIX: Wrapped OTP section in <form> so Enter key triggers submission
             <form
               className="space-y-5"
               onSubmit={(e) => {
@@ -414,14 +413,12 @@ const SignUpComponent = () => {
                 error={errors.otp}
               />
 
-              {/* ✅ FIX: Changed type from "button" to "submit" */}
               <SSButton
                 text="Verify OTP"
                 type="submit"
                 isLoading={isBusy}
               />
 
-              {/* Resend button stays outside form submit flow */}
               <div className="text-center mt-2">
                 <button
                   type="button"
