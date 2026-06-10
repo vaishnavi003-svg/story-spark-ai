@@ -26,9 +26,7 @@ main
   }
 
   // Else standard user
-  return {
-main
-  };
+  return {};
 };
 
 const analyzeStory = async (content: string) => {
