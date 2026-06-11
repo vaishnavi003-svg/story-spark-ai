@@ -8,7 +8,7 @@ export const getWordCount = (str: string | undefined): number => {
     return 0;
   }
 
-  return normalizedText.split(/\s+/).filter(Boolean).length;
+  return normalizedText.split(/\s+/).length;
 };
 
 export const calculateReadingTime = (content: string | undefined): number => {
