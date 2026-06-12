@@ -16,8 +16,7 @@ import {
   Star,
   Volume2,
   Volume,
-  ChevronUp,
-ChevronDown,
+ 
 } from "lucide-react";
 
 import { useSpeechSynthesis } from "../hooks/useSpeechSynthesis";
@@ -60,19 +59,7 @@ const AudioPlayer = forwardRef<AudioPlayerHandle, AudioPlayerProps>(
     const favorites = useVoiceFavorites();
     const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
-const scrollToTop = () => {
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth",
-  });
-};
 
-const scrollToBottom = () => {
-  window.scrollTo({
-    top: document.body.scrollHeight,
-    behavior: "smooth",
-  });
-};
 
 const speedSelectId = useId();
 
@@ -283,7 +270,7 @@ const speedSelectId = useId();
                       role="combobox"
                       value={speech.rate}
                       onChange={(event) => speech.setRate(Number(event.target.value))}
-                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
+                      className="w-full  min-w-0  rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
                     >
                       {SPEED_OPTIONS.map((option) => (
                         <option key={option} value={option}>
@@ -308,7 +295,7 @@ const speedSelectId = useId();
                       role="combobox"
                       value={voiceGender}
                       onChange={(event) => setVoiceGender(event.target.value as "female" | "male")}
-                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
+                      className="w-full  min-w-0  rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
                     >
                       <option value="female">Female voice</option>
                       <option value="male">Male voice</option>
@@ -373,7 +360,7 @@ const speedSelectId = useId();
                     role="combobox"
                     value={speech.selectedLanguage}
                     onChange={(event) => speech.setSelectedLanguage(event.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
+                    className="w-full min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
                   >
                     {speech.languageOptions.map((option) => (
                       <option key={option.lang} value={option.lang}>
@@ -391,7 +378,7 @@ const speedSelectId = useId();
                 >
                   Voice
                 </label>
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                   <button
                     type="button"
                     onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
@@ -404,14 +391,14 @@ const speedSelectId = useId();
                   >
                     <Star className="h-4 w-4" fill={showFavoritesOnly ? "currentColor" : "none"} />
                   </button>
-                  <div className="relative flex-1">
+                 <div className="relative min-w-0 flex-1">
                     <select
                       id={voiceSelectId}
                       aria-label="Narration voice"
                       role="combobox"
                       value={speech.selectedVoiceId}
                       onChange={(event) => speech.setSelectedVoiceId(event.target.value)}
-                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
+                      className="w-full min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
                     >
                       {displayedVoices.length === 0 ? (
                         <option disabled>No favorites available</option>
@@ -431,7 +418,7 @@ const speedSelectId = useId();
                 <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Voice controls
                 </label>
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                   <button
                     type="button"
                     onClick={() => {
