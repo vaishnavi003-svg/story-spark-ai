@@ -1,276 +1,331 @@
-import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-type BillingCycle = "monthly" | "yearly";
-
-interface Plan {
-  title: string;
-  price: {
-    monthly: number;
-    yearly: number;
-  };
-  features: string[];
-  linkTo: string;
-  buttonLabel: string;
-  highlight?: boolean;
-  badge?: string;
-  savings?: string;
-}
-
-interface FAQ {
-  question: string;
-  answer: string;
-}
-
-const plans: Plan[] = [
+const plans = [
   {
     title: "Free",
-    price: {
-      monthly: 0,
-      yearly: 0,
-    },
+    price: "$0",
+    duration: "/month",
+    description: "Perfect for getting started with AI-powered storytelling.",
     features: [
-      "5 AI stories per month",
-      "Basic AI model access",
-      "Community support",
-      "Plain text export",
-      "Basic templates",
-      "Single-user workspace",
+      "Basic AI writing assistance",
+      "5 stories per month",
+      "Standard templates",
+      "Community access",
     ],
     linkTo: "/signup",
-    buttonLabel: "Start Free",
+    buttonLabel: "Get Started Free",
+    popular: false,
+    accent: "rgba(96,165,250,0.18)",
+    borderColor: "rgba(148,163,184,0.18)",
+    buttonStyle: {
+      background: "linear-gradient(135deg, rgba(96,165,250,0.18), rgba(99,102,241,0.18))",
+      border: "1px solid rgba(96,165,250,0.35)",
+      color: "#93c5fd",
+    } as React.CSSProperties,
   },
   {
     title: "Pro",
-    highlight: true,
-    badge: "Most Popular",
-    savings: "Save 17%",
-    price: {
-      monthly: 19,
-      yearly: 190,
-    },
+    price: "$19",
+    duration: "/month",
+    description: "Unlock your full creative potential with unlimited access.",
     features: [
-      "Unlimited story generation",
-      "GPT-4 & Claude access",
-      "Priority email support",
-      "Advanced Markdown & PDF export",
-      "Commercial usage rights",
-      "Custom writing styles",
-      "Version history",
-      "Advanced prompt controls",
+      "Unlimited AI stories",
+      "Priority AI processing",
+      "Advanced story templates",
+      "Priority support",
+      "Analytics dashboard",
+      "Export in all formats",
     ],
     linkTo: "/payment?plan=Pro&price=19",
     buttonLabel: "Start Pro Trial",
-    highlight: true,
+    popular: true,
+    accent: "rgba(56,189,248,0.22)",
+    borderColor: "rgba(56,189,248,0.45)",
+    buttonStyle: {
+      background: "linear-gradient(135deg, #0ea5e9, #6366f1)",
+      border: "none",
+      color: "#ffffff",
+      boxShadow: "0 8px 32px rgba(14,165,233,0.35)",
+    } as React.CSSProperties,
   },
   {
     title: "Enterprise",
-    savings: "Save 17%",
-    price: {
-      monthly: 49,
-      yearly: 490,
-    },
+    price: "$49",
+    duration: "/month",
+    description: "Built for teams that need collaboration and full API access.",
     features: [
       "Everything in Pro",
-      "Real-time team collaboration",
-      "Dedicated account manager",
+      "Team collaboration tools",
       "Full API access",
-      "Custom model fine-tuning",
-      "SSO & advanced security",
-      "Usage analytics",
-      "Priority SLA support",
+      "Custom integrations",
+      "Dedicated account manager",
     ],
     linkTo: "/contact-us",
     buttonLabel: "Contact Sales",
+    popular: false,
+    accent: "rgba(168,85,247,0.18)",
+    borderColor: "rgba(148,163,184,0.18)",
+    buttonStyle: {
+      background: "linear-gradient(135deg, rgba(168,85,247,0.18), rgba(236,72,153,0.18))",
+      border: "1px solid rgba(168,85,247,0.35)",
+      color: "#d8b4fe",
+    } as React.CSSProperties,
   },
 ];
 
-const faqs: FAQ[] = [
-  {
-    question: "Can I cancel anytime?",
-    answer:
-      "Yes. You can cancel your subscription at any time without penalties.",
-  },
-  {
-    question: "Do you offer a free trial?",
-    answer:
-      "Yes. The Pro plan includes a 14-day free trial so you can explore all premium features before subscribing.",
-  },
-  {
-    question: "Can I upgrade later?",
-    answer:
-      "Absolutely. You can upgrade or downgrade your subscription whenever your needs change.",
-  },
-  {
-    question: "Do you offer team plans?",
-    answer:
-      "Yes. Enterprise includes collaboration tools, advanced permissions, API access, and dedicated support.",
-  },
-];
+const CheckIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    style={{ flexShrink: 0, marginTop: "2px" }}
+  >
+    <circle cx="8" cy="8" r="8" fill="rgba(56,189,248,0.15)" />
+    <path
+      d="M5 8l2.5 2.5L11 5.5"
+      stroke="#38bdf8"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
 
-const PricingComponent: React.FC = () => {
+const PricingComponent = () => {
   const navigate = useNavigate();
-
-  const [billing, setBilling] = useState<BillingCycle>("monthly");
 
   return (
     <section
       id="pricing-section"
-      className="relative overflow-hidden bg-slate-50 dark:bg-slate-950 py-16 sm:py-24 transition-colors duration-300"
+      style={{
+        paddingBlock: "clamp(3rem, 7vw, 5.5rem)",
+        position: "relative",
+        overflow: "hidden",
+      }}
     >
-      {/* Background Effects */}
-      <div className="absolute top-[-10%] left-[-10%] h-96 w-96 rounded-full bg-blue-600/10 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] h-96 w-96 rounded-full bg-purple-600/10 blur-[120px] pointer-events-none" />
+      {/* Background glows */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: "-20%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "700px",
+          height: "400px",
+          borderRadius: "9999px",
+          background: "radial-gradient(ellipse, rgba(56,189,248,0.08) 0%, transparent 70%)",
+          pointerEvents: "none",
+          filter: "blur(40px)",
+        }}
+      />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mx-auto mb-12 max-w-3xl text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/5 px-4 py-2 text-blue-600 dark:text-blue-400">
-            <i className="fa-solid fa-credit-card text-xs" />
-            <span className="text-xs font-bold uppercase tracking-widest">
-              Flexible Pricing
-            </span>
-          </div>
-
-          <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white sm:text-5xl">
+      <div className="story-page-shell">
+        {/* Heading */}
+        <div style={{ maxWidth: "560px", margin: "0 auto 3rem", textAlign: "center" }}>
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              borderRadius: "9999px",
+              border: "1px solid rgba(56,189,248,0.25)",
+              background: "rgba(56,189,248,0.08)",
+              color: "#38bdf8",
+              fontSize: "11px",
+              fontWeight: 700,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              padding: "4px 14px",
+              marginBottom: "16px",
+            }}
+          >
+            Pricing
+          </span>
+          <h2 className="story-section-heading" style={{ marginBottom: "12px" }}>
             Simple, Transparent Pricing
           </h2>
-
-          <p className="mx-auto mt-4 max-w-2xl leading-relaxed text-slate-500 dark:text-slate-400">
-            Choose the perfect plan for your creative workflow. Start for free
-            and upgrade whenever you're ready to unlock advanced AI tools.
+          <p className="story-section-copy">
+            Choose the plan that fits your creative journey. Upgrade or cancel anytime.
           </p>
         </div>
 
-        {/* Social Proof */}
-        <div className="mb-14">
-          <div className="grid grid-cols-1 gap-8 text-center sm:grid-cols-3">
-            <div>
-              <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white">
-                25,000+
-              </h3>
-              <p className="text-slate-500 dark:text-slate-400">
-                Stories Generated
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white">
-                4.9/5
-              </h3>
-              <p className="text-slate-500 dark:text-slate-400">
-                Customer Rating
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white">
-                5,000+
-              </h3>
-              <p className="text-slate-500 dark:text-slate-400">
-                Active Creators
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Billing Toggle */}
-        <div className="mb-14 flex flex-col items-center">
-          <div className="flex rounded-full bg-slate-200 p-1 dark:bg-slate-800">
-            <button
-              type="button"
-              onClick={() => setBilling("monthly")}
-              className={`rounded-full px-6 py-2 text-sm font-semibold transition-all ${
-                billing === "monthly"
-                  ? "bg-white shadow dark:bg-slate-700"
-                  : "text-slate-600 dark:text-slate-400"
-              }`}
-            >
-              Monthly
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setBilling("yearly")}
-              className={`rounded-full px-6 py-2 text-sm font-semibold transition-all ${
-                billing === "yearly"
-                  ? "bg-white shadow dark:bg-slate-700"
-                  : "text-slate-600 dark:text-slate-400"
-              }`}
-            >
-              Yearly
-            </button>
-          </div>
-
-          <p className="mt-3 text-sm font-semibold text-green-600 dark:text-green-400">
-            Save up to 17% with annual billing
-          </p>
-        </div>
-
-        {/* Pricing Cards */}
-        <div className="grid grid-cols-1 items-stretch gap-8 lg:grid-cols-3">
+        {/* Cards grid */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: "1.5rem",
+            alignItems: "start",
+          }}
+        >
           {plans.map((plan) => (
             <div
               key={plan.title}
-              className={`relative flex flex-col rounded-3xl p-8 transition-all duration-300 hover:-translate-y-1 ${
-                plan.highlight
-                  ? "border-2 border-blue-500 bg-white shadow-2xl shadow-blue-500/10 dark:bg-slate-900 lg:scale-105"
-                  : "border border-slate-200 bg-white hover:shadow-xl dark:border-white/10 dark:bg-slate-900/50"
-              }`}
+              className="motion-card"
+              style={{
+                position: "relative",
+                borderRadius: "20px",
+                border: `1px solid ${plan.borderColor}`,
+                background: plan.popular
+                  ? "linear-gradient(160deg, rgba(15,23,42,0.92) 0%, rgba(12,36,60,0.88) 100%)"
+                  : "linear-gradient(180deg, rgba(15,23,42,0.82) 0%, rgba(15,23,42,0.58) 100%)",
+                boxShadow: plan.popular
+                  ? "0 0 0 1px rgba(56,189,248,0.45), 0 24px 64px rgba(2,6,23,0.4), 0 0 60px rgba(56,189,248,0.08)"
+                  : "0 20px 55px rgba(2,6,23,0.24)",
+                padding: "2rem",
+                display: "flex",
+                flexDirection: "column",
+                gap: "0",
+              }}
             >
-              {plan.badge && (
-                <div className="absolute right-5 top-5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-3 py-1 text-xs font-bold text-white shadow-lg">
-                  {plan.badge}
+              {/* Popular badge */}
+              {plan.popular && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "-13px",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    background: "linear-gradient(135deg, #0ea5e9, #6366f1)",
+                    color: "#ffffff",
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                    padding: "4px 18px",
+                    borderRadius: "9999px",
+                    boxShadow: "0 4px 18px rgba(14,165,233,0.45)",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  ✦ Most Popular
                 </div>
               )}
 
-              <div>
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
-                  {plan.title}
-                </h3>
+              {/* Accent glow behind card top */}
+              <div
+                aria-hidden="true"
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: "120px",
+                  borderRadius: "20px 20px 0 0",
+                  background: `radial-gradient(ellipse at 50% 0%, ${plan.accent}, transparent 70%)`,
+                  pointerEvents: "none",
+                }}
+              />
 
-                <div className="mt-6 flex items-end">
-                  <span className="text-5xl font-extrabold text-slate-900 dark:text-white">
-                    $
-                    {billing === "monthly"
-                      ? plan.price.monthly
-                      : plan.price.yearly}
-                  </span>
+              {/* Plan title */}
+              <h3
+                style={{
+                  fontSize: "1rem",
+                  fontWeight: 700,
+                  letterSpacing: "0.04em",
+                  textTransform: "uppercase",
+                  color: plan.popular ? "#38bdf8" : "#94a3b8",
+                  marginBottom: "12px",
+                }}
+              >
+                {plan.title}
+              </h3>
 
-                  <span className="mb-1 ml-2 text-slate-500 dark:text-slate-400">
-                    {billing === "monthly" ? "/month" : "/year"}
-                  </span>
-                </div>
-
-                {billing === "yearly" && plan.savings && (
-                  <div className="mt-3 inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700 dark:bg-green-500/10 dark:text-green-400">
-                    {plan.savings}
-                  </div>
-                )}
-
-                <div className="my-8 h-px bg-slate-200 dark:bg-white/10" />
-
-                <ul className="space-y-4">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3">
-                      <i className="fa-solid fa-circle-check mt-1 shrink-0 text-green-500" />
-
-                      <span className="text-sm text-slate-600 dark:text-slate-300">
-                        {feature}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+              {/* Price */}
+              <div style={{ marginBottom: "12px", display: "flex", alignItems: "flex-end", gap: "4px" }}>
+                <span
+                  style={{
+                    fontSize: "clamp(2.5rem, 5vw, 3rem)",
+                    fontWeight: 800,
+                    lineHeight: 1,
+                    color: "#f8fafc",
+                    letterSpacing: "-0.02em",
+                    fontFamily: "'Space Grotesk', sans-serif",
+                  }}
+                >
+                  {plan.price}
+                </span>
+                <span
+                  style={{
+                    fontSize: "0.875rem",
+                    color: "#64748b",
+                    fontWeight: 500,
+                    marginBottom: "6px",
+                  }}
+                >
+                  {plan.duration}
+                </span>
               </div>
 
+              {/* Description */}
+              <p
+                style={{
+                  fontSize: "0.875rem",
+                  color: "#94a3b8",
+                  lineHeight: 1.6,
+                  marginBottom: "1.5rem",
+                  minHeight: "42px",
+                }}
+              >
+                {plan.description}
+              </p>
+
+              {/* Divider */}
+              <div
+                style={{
+                  height: "1px",
+                  background: "rgba(148,163,184,0.12)",
+                  marginBottom: "1.5rem",
+                }}
+              />
+
+              {/* Features */}
+              <ul
+                style={{
+                  listStyle: "none",
+                  margin: 0,
+                  padding: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                  marginBottom: "2rem",
+                  flex: 1,
+                }}
+              >
+                {plan.features.map((feature) => (
+                  <li
+                    key={feature}
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: "10px",
+                      fontSize: "0.875rem",
+                      color: "#cbd5e1",
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    <CheckIcon />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+
+              {/* CTA Button */}
               <button
-                type="button"
+                className="motion-cta"
                 onClick={() => navigate(plan.linkTo)}
-                className={`mt-10 w-full rounded-xl px-4 py-4 font-bold uppercase tracking-wide transition-all active:scale-[0.98] ${
-                  plan.highlight
-                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg hover:from-blue-500 hover:to-indigo-500"
-                    : "border-2 border-indigo-600 bg-indigo-600 text-white hover:bg-indigo-700 hover:border-indigo-700 dark:border-indigo-500 dark:bg-indigo-600 dark:hover:bg-indigo-500 dark:hover:border-indigo-500 shadow-lg"
-                }`}
+                style={{
+                  width: "100%",
+                  padding: "14px 20px",
+                  borderRadius: "12px",
+                  fontSize: "0.9375rem",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  letterSpacing: "0.01em",
+                  ...plan.buttonStyle,
+                }}
               >
                 {plan.buttonLabel}
               </button>
@@ -278,53 +333,17 @@ const PricingComponent: React.FC = () => {
           ))}
         </div>
 
-        {/* Testimonial */}
-        <div className="mx-auto mt-24 max-w-4xl">
-          <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-sm dark:border-white/10 dark:bg-slate-900">
-            <i className="fa-solid fa-quote-left mb-5 text-4xl text-blue-500" />
-
-            <p className="text-lg leading-relaxed text-slate-700 dark:text-slate-300">
-              “This platform reduced our content production time by over 70%.
-              The Pro plan paid for itself within the first week.”
-            </p>
-
-            <div className="mt-6">
-              <h4 className="font-bold text-slate-900 dark:text-white">
-                Sarah Johnson
-              </h4>
-
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Content Director, StoryForge Media
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* FAQ */}
-        <div className="mx-auto mt-24 max-w-4xl">
-          <h2 className="mb-10 text-center text-3xl font-bold text-slate-900 dark:text-white">
-            Frequently Asked Questions
-          </h2>
-
-          <div className="space-y-4">
-            {faqs.map((faq) => (
-              <details
-                key={faq.question}
-                className="group rounded-2xl border border-slate-200 bg-white p-5 dark:border-white/10 dark:bg-slate-900"
-              >
-                <summary className="flex cursor-pointer list-none items-center justify-between font-semibold text-slate-900 dark:text-white">
-                  {faq.question}
-
-                  <i className="fa-solid fa-plus text-sm transition-transform group-open:rotate-45" />
-                </summary>
-
-                <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-400">
-                  {faq.answer}
-                </p>
-              </details>
-            ))}
-          </div>
-        </div>
+        {/* Bottom note */}
+        <p
+          style={{
+            textAlign: "center",
+            marginTop: "2.5rem",
+            fontSize: "0.8125rem",
+            color: "#475569",
+          }}
+        >
+          All plans include a 14-day money-back guarantee. No credit card required for Free.
+        </p>
       </div>
     </section>
   );
