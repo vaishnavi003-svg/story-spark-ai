@@ -119,6 +119,12 @@ const throwIfAborted = (signal?: AbortSignal): void => {
   }
 };
 
+const escapePrompt = (text: string): string => {
+  return text
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, "\\\"");
+};
+
 const sanitizeJsonText = (rawText: string): string => {
   const trimmed = rawText.trim();
   if (!trimmed.startsWith("```")) {
@@ -134,7 +140,7 @@ const sanitizeJsonText = (rawText: string): string => {
 const buildCharactersInstruction = (characters?: ICharacter[]): string => {
   if (!characters || characters.length === 0) return "";
   const charsString = characters
-    .map((c) => `- Name: ${c.name}, Role: ${c.role}, Personality/Traits: ${c.personality}`)
+    .map((c) => `- Name: ${escapePrompt(c.name)}, Role: ${escapePrompt(c.role)}, Personality/Traits: ${escapePrompt(c.personality)}`)
     .join("\n");
   return `Cast of Characters (You MUST incorporate these characters into all generated stories and maintain their roles, relationship dynamics, and traits consistently):\n${charsString}\n\n`;
 };
@@ -204,7 +210,7 @@ export async function generateWithGeminiStories(
       });
 
       return chatSession.sendMessage(
-        `${genreInstruction}${toneInstruction}${charactersInstruction}You are an expert storyteller and emotion analyst. The user provided the following base prompt: "${prompt}".
+        `${genreInstruction}${toneInstruction}${charactersInstruction}You are an expert storyteller and emotion analyst. The user provided the following base prompt: "${escapePrompt(prompt)}".
         First, enhance this prompt to be more emotionally engaging and context-sensitive (e.g., add suspense, joy, or mystery).
         Then, generate ${numStories} different short stories based on this ENHANCED prompt.
         The stories MUST be written entirely in the ${language} language.
@@ -300,9 +306,9 @@ export async function generateAlternateEndingsWithGemini(
         history: [],
       });
       return chatSession.sendMessage(
-        `You are a professional narrative editor. Analyze the following story (Title: "${title}", Genre/Tag: "${tag}", Language: "${language}"):
+        `You are a professional narrative editor. Analyze the following story (Title: "${escapePrompt(title)}", Genre/Tag: "${escapePrompt(tag)}", Language: "${language}"):
         Story Content:
-        "${content}"
+        "${escapePrompt(content)}"
         
         Generate 5 alternate endings for this story corresponding to the following styles:
         1. "Happy Ending"
@@ -400,7 +406,7 @@ export async function generateWithGeminiStoriesStream(
             role: "user",
             parts: [
               {
-                text: `Generate ${numStories} different short stories based on the following prompt: "${prompt}".
+                text: `Generate ${numStories} different short stories based on the following prompt: "${escapePrompt(prompt)}".
                 Each story should be in JSON format with fields: "title", "content", and "tag".
                 Ensure each story is approximately ${wordLength} words long.
                 Return the output as a JSON array.`,
@@ -455,9 +461,9 @@ export async function generateRemixWithGemini(
 
   const prompt = `You are a creative writing assistant. Here is a story:
 
-Title: ${title}
-Content: ${content}
-Genre: ${tag}
+Title: ${escapePrompt(title)}
+Content: ${escapePrompt(content)}
+Genre: ${escapePrompt(tag)}
 
 Task: ${remixInstruction}
 
@@ -521,7 +527,7 @@ export async function generateStoryContinuationWithGemini(
       return chatSession.sendMessage(
         `You are an expert storyteller. The user has written the following story so far:
 
-"${storyContext}"
+"${escapePrompt(storyContext)}"
 
 Continue this story naturally with 2-4 paragraphs that maintain the same tone, style, and narrative direction. The continuation MUST be written entirely in ${language}.
 
@@ -578,8 +584,8 @@ export async function translateStoryWithGemini(
   throwIfAborted(signal);
   const prompt = `You are a professional translator. Translate the following story into ${targetLanguage}.
 
-Title: ${title}
-Content: ${content}
+Title: ${escapePrompt(title)}
+Content: ${escapePrompt(content)}
 
 Return a JSON object with this exact structure:
 {
@@ -633,11 +639,11 @@ export async function generateStoryboardWithGemini(
 
 Analyze the story below and extract 4 to 8 key visual scenes that represent the story's beginning, major turning points, climax, and ending.
 
-Title: ${title}
-Genre: ${genre}
+Title: ${escapePrompt(title)}
+Genre: ${escapePrompt(genre)}
 Language: ${language}
 Story:
-${content}
+${escapePrompt(content)}
 
 Return only a valid JSON object with this exact structure:
 {
