@@ -39,9 +39,24 @@ const PASSWORD_STRENGTH_CONFIG: Record<
   StrengthLevel,
   { label: string; barColor: string; barWidth: string; textColor: string }
 > = {
-  weak: { label: "Weak", barColor: "bg-red-500", barWidth: "w-1/3", textColor: "text-red-400" },
-  medium: { label: "Medium", barColor: "bg-yellow-400", barWidth: "w-2/3", textColor: "text-yellow-300" },
-  strong: { label: "Strong", barColor: "bg-green-500", barWidth: "w-full", textColor: "text-green-400" },
+  weak: {
+    label: "Weak",
+    barColor: "bg-red-500",
+    barWidth: "w-1/3",
+    textColor: "text-red-600 dark:text-red-400",
+  },
+  medium: {
+    label: "Medium",
+    barColor: "bg-yellow-400",
+    barWidth: "w-2/3",
+    textColor: "text-yellow-600 dark:text-yellow-300",
+  },
+  strong: {
+    label: "Strong",
+    barColor: "bg-green-500",
+    barWidth: "w-full",
+    textColor: "text-green-600 dark:text-green-400",
+  },
 };
 
 const getStrengthLevel = (passedChecks: number): StrengthLevel => {
@@ -106,26 +121,29 @@ const SignUpComponent = () => {
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (data) {
-const user = {
-  name: data.name,
-  email: data.email,
-  password: data.password,
-  confirmPassword: data.confirmPassword,
-};
+      const user = {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+      };
 
-const otpPayload = {
-  name: data.name,
-  email: data.email,
-};
+      const otpPayload = {
+        name: data.name,
+        email: data.email,
+      };
+
       if (password !== confirmPassword) {
         toast.error("Passwords do not match!");
         return;
       }
+
       const passwordError = getPasswordError(data.password);
       if (passwordError) {
         toast.error(passwordError);
         return;
       }
+
       setIsBusy(true);
       try {
         const res = await emailVerify({ ...otpPayload }).unwrap();
@@ -153,18 +171,32 @@ const otpPayload = {
 
   const handleOtpValidation = async () => {
     const enteredOtp = otp?.trim();
-    if (!enteredOtp) { toast.error("Please enter OTP"); return; }
-    if (!registerInfo) { toast.error("Something went wrong. Please restart the process."); return; }
-    if (Date.now() > expiredAt) { toast.error("OTP expired. Please request a new one."); return; }
+
+    if (!enteredOtp) {
+      toast.error("Please enter OTP");
+      return;
+    }
+
+    if (!registerInfo) {
+      toast.error("Something went wrong. Please restart the process.");
+      return;
+    }
+
+    if (Date.now() > expiredAt) {
+      toast.error("OTP expired. Please request a new one.");
+      return;
+    }
 
     setIsBusy(true);
     try {
       const otpResponse = await verifyOtp({ email: registerInfo.email, otp: enteredOtp }).unwrap();
+
       if (otpResponse?.data?.verificationToken) {
         const res = await registerUser({
           ...registerInfo,
           verificationToken: otpResponse.data.verificationToken,
         }).unwrap();
+
         if (res.data.accessToken) {
           toast.success("OTP validated successfully!");
           storeUserInfo({ accessToken: res.data.accessToken });
@@ -184,16 +216,19 @@ const otpPayload = {
 
   const handleResendOtp = async () => {
     if (cooldown > 0 || isBusy) return;
+
     if (!registerInfo) {
       toast.error("Something went wrong. Please restart the process.");
       return;
     }
+
     setIsBusy(true);
     try {
       const res = await emailVerify({
         name: registerInfo.name,
         email: registerInfo.email,
       }).unwrap();
+
       if (res?.data) {
         const { expiresAt } = res.data;
         setExpiredAt(new Date(expiresAt).getTime());
@@ -219,9 +254,11 @@ const otpPayload = {
       toast.error("Google login failed");
       return;
     }
+
     setIsBusy(true);
     try {
       const res = await googleLogin({ token: credentialResponse.credential }).unwrap();
+
       if (res?.data?.accessToken) {
         storeUserInfo({ accessToken: res.data.accessToken });
         toast.success("Logged in with Google successfully!");
@@ -229,56 +266,6 @@ const otpPayload = {
       }
     } catch {
       toast.error("Google authentication failed");
-    } finally {
-      setIsBusy(false);
-    }
-  };
-
-  const handleResendOtp = async () => {
-    if (cooldown > 0 || isBusy) return;
-    if (!registerInfo) {
-      toast.error("Something went wrong. Please restart the process.");
-      return;
-    }
-    setIsBusy(true);
-    try {
-      const otpPayload = {
-        name: registerInfo.name,
-        email: registerInfo.email,
-      };
-      const res = await emailVerify({ ...otpPayload }).unwrap();
-      if (res?.data) {
-        const { expiresAt } = res.data;
-        setExpiredAt(new Date(expiresAt).getTime());
-        toast.success("OTP resent successfully!");
-        setValue("otp", "");
-        setCooldown(60);
-      }
-    } catch (error) {
-      const message =
-        (error as { data?: Array<{ message?: string }> })?.data?.[0]?.message ||
-        "Failed to resend OTP. Please try again.";
-      toast.error(message);
-    } finally {
-      setIsBusy(false);
-    }
-  };
-
-  const handleGoogleLoginSuccess = async (
-    credentialResponse: CredentialResponse
-  ) => {
-    setIsBusy(true);
-    try {
-      const res = await googleLogin({
-        token: credentialResponse.credential,
-      }).unwrap();
-      if (res.data.accessToken) {
-        toast.success("User logged in successfully with Google!");
-        storeUserInfo({ accessToken: res.data.accessToken });
-        navigate("/");
-      }
-    } catch {
-      toast.error("Failed to login with Google. Please try again.");
     } finally {
       setIsBusy(false);
     }
@@ -297,7 +284,7 @@ const otpPayload = {
       setValue("name", registerInfo.name);
       setValue("email", registerInfo.email);
       setValue("password", registerInfo.password);
-      setValue("confirmPassword", registerInfo.password);
+      setValue("confirmPassword", registerInfo.confirmPassword);
     }
   }, [showOtpField, registerInfo, setValue]);
 
@@ -312,44 +299,42 @@ const otpPayload = {
 
         {/* Title */}
         <div className="mb-6 text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400 drop-shadow-sm">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-indigo-500 dark:from-blue-400 dark:to-indigo-400 drop-shadow-sm">
             STORY SPARK AI
           </h2>
         </div>
 
-
         {/* UPDATED: Structured layout classes to lock down maximum inner boundary constraints */}
-        <div className="bg-slate-800/60 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-5 sm:p-8 shadow-2xl w-full min-w-0 overflow-hidden box-border">
-
-        <Link
-  to="/"
-  className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-slate-400 transition-colors duration-200 hover:text-blue-400"
->
-  <span>←</span>
-  <span>Back to Home</span>
-</Link>
-          <h3 className="text-center text-xl sm:text-2xl font-bold tracking-tight text-slate-200">
         {/* Card */}
         <div className="bg-white dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200 dark:border-slate-700/50 rounded-2xl p-5 sm:p-8 shadow-2xl w-full min-w-0 overflow-hidden box-border">
 
-          <h3 className="text-center text-xl sm:text-2xl font-bold tracking-tight text-slate-800 dark:text-slate-200">
+          <Link
+            to="/"
+            className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 transition-colors duration-200 hover:text-blue-500 dark:hover:text-blue-400"
+          >
+            <span>←</span>
+            <span>Back to Home</span>
+          </Link>
 
+          <h3 className="text-center text-xl sm:text-2xl font-bold tracking-tight text-slate-800 dark:text-slate-200">
             {showOtpField ? "Verify Your Email" : "Create Account"}
           </h3>
+
           {showOtpField && registerInfo && (
-            <p className="mt-2 mb-4 text-center text-xs sm:text-sm text-slate-400 px-1">
+            <p className="mt-2 mb-4 text-center text-xs sm:text-sm text-slate-500 dark:text-slate-400 px-1">
               We sent a 6-digit code to{" "}
-              <span className="font-semibold text-blue-400">{registerInfo.email}</span>.
+              <span className="font-semibold text-blue-500 dark:text-blue-400">{registerInfo.email}</span>.
               {" "}Not the right address?{" "}
               <button
                 type="button"
                 onClick={handleGoBack}
-                className="font-semibold text-blue-400 hover:text-blue-300 underline transition-colors cursor-pointer"
+                className="font-semibold text-blue-500 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 underline transition-colors cursor-pointer"
               >
                 Change email
               </button>
             </p>
           )}
+
           {!showOtpField && (
             <p className="mt-2 mb-6 text-center text-xs sm:text-sm text-slate-500 dark:text-slate-400 px-1">
               Join StorySparkAI and begin your creative journey.
@@ -426,13 +411,25 @@ const otpPayload = {
                   >
                     <div className={`h-full transition-all duration-300 ${barColor} ${barWidth}`} />
                   </div>
+
                   <p className={`text-xs font-bold uppercase tracking-wider ${textColor}`}>
                     {strengthLabel} Password
                   </p>
+
                   <ul className="space-y-1.5 list-none p-0 m-0 w-full box-border text-[11px] font-medium">
                     {PASSWORD_REQUIREMENTS.map(({ key, label }) => {
                       const met = passwordChecks[key];
+
                       return (
+                        <li
+                          key={key}
+                          className={`flex items-center gap-2 ${
+                            met
+                              ? "text-green-500 dark:text-green-400"
+                              : "text-slate-500 dark:text-slate-400"
+                          }`}
+                        >
+                          <span>{met ? "✓" : "•"}</span>
                           <span>{label}</span>
                         </li>
                       );
@@ -499,15 +496,16 @@ const otpPayload = {
                   type="button"
                   onClick={handleResendOtp}
                   disabled={cooldown > 0 || isBusy}
-                  className="text-xs font-bold uppercase tracking-wider text-blue-400 hover:text-blue-300 disabled:text-slate-600 transition-colors duration-150 disabled:cursor-not-allowed cursor-pointer"
+                  className="text-xs font-bold uppercase tracking-wider text-blue-500 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 disabled:text-slate-400 dark:disabled:text-slate-600 transition-colors duration-150 disabled:cursor-not-allowed cursor-pointer"
                 >
                   {cooldown > 0 ? `Resend OTP (${cooldown}s)` : "Resend OTP"}
                 </button>
+
                 <button
                   type="button"
                   onClick={handleGoBack}
                   disabled={isBusy}
-                  className="text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-slate-300 transition-colors duration-150 focus:outline-none cursor-pointer mt-1"
+                  className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors duration-150 focus:outline-none cursor-pointer mt-1"
                 >
                   Change Email
                 </button>
@@ -537,7 +535,7 @@ const otpPayload = {
 
               <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
                 Already have an account?{" "}
-                <Link to="/login" className="font-semibold text-blue-400 hover:underline transition-colors">
+                <Link to="/login" className="font-semibold text-blue-500 dark:text-blue-400 hover:underline transition-colors">
                   Sign In
                 </Link>
               </p>
@@ -552,4 +550,3 @@ const otpPayload = {
 };
 
 export default SignUpComponent;
-
