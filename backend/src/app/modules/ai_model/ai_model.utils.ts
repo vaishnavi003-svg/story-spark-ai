@@ -225,6 +225,10 @@ export async function generateWithGeminiStories(
         history: [],
       });
 
+      const toneInstruction = buildToneInstruction(tone);
+      const genreInstruction = buildGenreInstruction(genre);
+      const charactersInstruction = buildCharactersInstruction(characters);
+
       return chatSession.sendMessage(
         `${buildGenreInstruction(genre)}${buildToneInstruction(tone)}${buildCharactersInstruction(characters)}You are an expert storyteller and emotion analyst. The user provided the following base prompt: "${prompt}".
         First, enhance this prompt to be more emotionally engaging and context-sensitive (e.g., add suspense, joy, or mystery).
