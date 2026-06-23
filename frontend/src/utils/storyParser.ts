@@ -3,9 +3,8 @@ export interface IStoryNode {
   name: string;
   type: "location" | "character";
   excerpt: string;
-  occurrenceCount?: number; // NEW: Track how many times location appears
+  occurrenceCount?: number; // ✅ YEH LINE ADD KI
 }
-
 export interface IStoryLink {
   source: string;
   target: string;
@@ -44,8 +43,29 @@ const SKIP_WORDS = new Set([
   "Very", "Too", "All", "Both", "Each", "Few", "Own", "Same", "Other",
   ...LOCATION_WORDS.map(w => w.charAt(0).toUpperCase() + w.slice(1)),
   "Dragons", "Dragon", "Night", "Day", "Morning", "Evening",
+  // ✅ Helper to find all occurrences of a word
+const getAllOccurrences = (content: string, word: string): number[] => {
+  const regex = new RegExp(word, 'gi');
+  const matches = [...content.matchAll(regex)];
+  return matches.map(m => m.index || 0);
+};
+
+// Score context quality
+const scoreContext = (context: string): number => {
+  let score = 0;
+  const sentences = context.match(/[.!?]/g);
+  if (sentences) score += sentences.length * 3;
+  const quotes = context.match(/["']/g);
+  if (quotes) score += quotes.length * 2;
+  const caps = context.match(/[A-Z][a-z]+/g);
+  if (caps) score += caps.length;
+  const words = context.split(/\s+/).length;
+  score += Math.min(words / 10, 5);
+  return score;
+};
 ]);
 
+// ✅ NEW: Helper to find all occurrences of a word
 // ✅ NEW: Helper to find all occurrences of a word
 const getAllOccurrences = (content: string, word: string): number[] => {
   const regex = new RegExp(word, 'gi');
@@ -53,6 +73,7 @@ const getAllOccurrences = (content: string, word: string): number[] => {
   return matches.map(m => m.index || 0);
 };
 
+// ✅ NEW: Score context quality
 // ✅ NEW: Score context quality
 const scoreContext = (context: string): number => {
   let score = 0;
@@ -66,7 +87,6 @@ const scoreContext = (context: string): number => {
   score += Math.min(words / 10, 5); // Longer context = better
   return score;
 };
-
 export function parseStory(content: string): IStoryGraph {
   const nodes: IStoryNode[] = [];
   const links: IStoryLink[] = [];
@@ -76,58 +96,33 @@ export function parseStory(content: string): IStoryGraph {
   const foundLocations: IStoryNode[] = [];
   
   LOCATION_WORDS.forEach((word) => {
-    // ✅ FIX: Find ALL occurrences
-    const positions = getAllOccurrences(content, word);
+  // ✅ FIX: Find ALL occurrences
+  const positions = getAllOccurrences(content, word);
+  
+  if (positions.length === 0) return;
+  
+  // Find the BEST occurrence (with most context)
+  let bestIdx = positions[0];
+  let bestScore = -1;
+  
+  for (const idx of positions) {
+    const start = Math.max(0, idx - 50);
+    const end = Math.min(content.length, idx + word.length + 50);
+    const context = content.slice(start, end);
+    const score = scoreContext(context);
     
-    if (positions.length === 0) return;
-    
-    // Find the BEST occurrence (with most context)
-    let bestIdx = positions[0];
-    let bestScore = -1;
-    
-    for (const idx of positions) {
-      const start = Math.max(0, idx - 50);
-      const end = Math.min(content.length, idx + word.length + 50);
-      const context = content.slice(start, end);
-      const score = scoreContext(context);
-      
-      if (score > bestScore) {
-        bestScore = score;
-        bestIdx = idx;
-      }
+    if (score > bestScore) {
+      bestScore = score;
+      bestIdx = idx;
     }
-    
-    // Use the BEST occurrence for excerpt
-    const start = Math.max(0, bestIdx - 50);
-    const end = Math.min(content.length, bestIdx + word.length + 50);
-    const excerpt = "..." + content.slice(start, end).trim() + "...";
-
-    const node: IStoryNode = {
-      id: `loc_${word}`,
-      name: word.charAt(0).toUpperCase() + word.slice(1),
-      type: "location",
-      excerpt,
-      occurrenceCount: positions.length, // Track total occurrences
-    };
-    
-    nodes.push(node);
-    foundLocations.push(node);
-  });
-
-  // --- Find characters (existing logic) ---
-  const words = content.split(/\s+/);
-  const charCount: Record<string, number> = {};
-
-  words.forEach((word) => {
-    const clean = word.replace(/[^a-zA-Z]/g, "");
-    if (
-      clean.length >= 3 &&
-      /^[A-Z]/.test(clean) &&
-      !SKIP_WORDS.has(clean)
-    ) {
-      charCount[clean] = (charCount[clean] || 0) + 1;
-    }
-  });
+  }
+  
+  // Use the BEST occurrence for excerpt
+  const start = Math.max(0, bestIdx - 50);
+  const end = Math.min(content.length, bestIdx + word.length + 50);
+  const excerpt = "..." + content.slice(start, end).trim() + "...";
+  // ... rest
+});
 
   const sentenceStartWords = new Set<string>();
   const sentences = content.split(/(?<=[.!?])\s+/);
