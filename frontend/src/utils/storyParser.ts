@@ -3,7 +3,11 @@ export interface IStoryNode {
   name: string;
   type: "location" | "character";
   excerpt: string;
+ test/content-moderation-3836
   occurrenceCount?: number; // ✅ YEH LINE ADD KI
+
+  occurrenceCount?: number; // NEW: Track how many times location appears
+main
 }
 export interface IStoryLink {
   source: string;
@@ -66,7 +70,10 @@ const scoreContext = (context: string): number => {
 ]);
 
 // ✅ NEW: Helper to find all occurrences of a word
+ test/content-moderation-3836
 // ✅ NEW: Helper to find all occurrences of a word
+
+ main
 const getAllOccurrences = (content: string, word: string): number[] => {
   const regex = new RegExp(word, 'gi');
   const matches = [...content.matchAll(regex)];
@@ -74,7 +81,10 @@ const getAllOccurrences = (content: string, word: string): number[] => {
 };
 
 // ✅ NEW: Score context quality
+ test/content-moderation-3836
 // ✅ NEW: Score context quality
+
+ main
 const scoreContext = (context: string): number => {
   let score = 0;
   const sentences = context.match(/[.!?]/g);
@@ -87,6 +97,10 @@ const scoreContext = (context: string): number => {
   score += Math.min(words / 10, 5); // Longer context = better
   return score;
 };
+ test/content-moderation-3836
+
+
+ main
 export function parseStory(content: string): IStoryGraph {
   const nodes: IStoryNode[] = [];
   const links: IStoryLink[] = [];
@@ -96,6 +110,7 @@ export function parseStory(content: string): IStoryGraph {
   const foundLocations: IStoryNode[] = [];
   
   LOCATION_WORDS.forEach((word) => {
+ test/content-moderation-3836
   // ✅ FIX: Find ALL occurrences
   const positions = getAllOccurrences(content, word);
   
@@ -114,6 +129,58 @@ export function parseStory(content: string): IStoryGraph {
     if (score > bestScore) {
       bestScore = score;
       bestIdx = idx;
+
+    // ✅ FIX: Find ALL occurrences
+    const positions = getAllOccurrences(content, word);
+    
+    if (positions.length === 0) return;
+    
+    // Find the BEST occurrence (with most context)
+    let bestIdx = positions[0];
+    let bestScore = -1;
+    
+    for (const idx of positions) {
+      const start = Math.max(0, idx - 50);
+      const end = Math.min(content.length, idx + word.length + 50);
+      const context = content.slice(start, end);
+      const score = scoreContext(context);
+      
+      if (score > bestScore) {
+        bestScore = score;
+        bestIdx = idx;
+      }
+    }
+    
+    // Use the BEST occurrence for excerpt
+    const start = Math.max(0, bestIdx - 50);
+    const end = Math.min(content.length, bestIdx + word.length + 50);
+    const excerpt = "..." + content.slice(start, end).trim() + "...";
+
+    const node: IStoryNode = {
+      id: `loc_${word}`,
+      name: word.charAt(0).toUpperCase() + word.slice(1),
+      type: "location",
+      excerpt,
+      occurrenceCount: positions.length, // Track total occurrences
+    };
+    
+    nodes.push(node);
+    foundLocations.push(node);
+  });
+
+  // --- Find characters (existing logic) ---
+  const words = content.split(/\s+/);
+  const charCount: Record<string, number> = {};
+
+  words.forEach((word) => {
+    const clean = word.replace(/[^a-zA-Z]/g, "");
+    if (
+      clean.length >= 3 &&
+      /^[A-Z]/.test(clean) &&
+      !SKIP_WORDS.has(clean)
+    ) {
+      charCount[clean] = (charCount[clean] || 0) + 1;
+ main
     }
   }
   
